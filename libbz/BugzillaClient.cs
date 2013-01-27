@@ -32,11 +32,12 @@ using Hyena.Json;
 
 namespace CodeRinseRepeat.Bugzilla
 {
-	public partial class BugzillaClient
+	public partial class BugzillaClient : IDisposable
 	{
 		public Uri ServiceUri { get; private set; }
 		long callId;
 		CookieContainer cookies;
+		bool disposed;
 
 		public BugzillaClient (Uri serviceUri)
 		{
@@ -100,6 +101,35 @@ namespace CodeRinseRepeat.Bugzilla
 				var result = (JsonObject) t.Result["result"];
 				return ((JsonArray) result["bugs"]).Select (bo => Bug.FromJsonObject ((JsonObject) bo));
 			});
+		}
+
+		public Task<IEnumerable<Bug>> GetBugsAssignedToMeAsync ()
+		{
+			if (string.IsNullOrWhiteSpace (loginForCurrentUser))
+				throw new InvalidOperationException ("You must be logged in to perform that action.");
+
+			return DoServiceCallAsync (BugSearch, new Dictionary<string, object> {
+				{"assigned_to", loginForCurrentUser}
+			}).ContinueWith (t => {
+				var result = (JsonObject)t.Result["result"];
+				return ((JsonArray)result["bugs"]).Select (bo => Bug.FromJsonObject ((JsonObject)bo));
+			});
+		}														
+		public void Dispose ()
+		{
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+
+		~BugzillaClient ()
+		{
+			Dispose (false);
+		}
+
+		private void Dispose (bool disposing)
+		{
+			if (disposing)
+				DoServiceCallAsync (Logout);
 		}
 	}
 }
