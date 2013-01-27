@@ -63,7 +63,7 @@ namespace CodeRinseRepeat.Bugzilla
 			if (cookies != null)
 				serviceClient.Cookies = cookies;
 			
-			serviceClient.Headers.Add (HttpResponseHeader.ContentType, "application/json");
+			serviceClient.Headers.Add (HttpRequestHeader.ContentType, "application/json");
 			
 			#if DEBUG
 			Console.Error.Write ("Making request...");
