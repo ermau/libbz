@@ -43,14 +43,19 @@ namespace CodeRinseRepeat.Bugzilla
 			ServiceUri = serviceUri;
 		}
 
-		const string LoginMethod = "User.login";
+		const string Login = "User.login";
 		const string BugGet = "Bug.get";
 		const string BugComment = "Bug.add_comment";
 		const string BugUpdate = "Bug.update";
+		const string Logout = "User.logout";
+		const string BugSearch = "Bug.search";
+
+		string loginForCurrentUser;
 
 		public Task LoginAsync (string login, string password)
 		{
-			return DoServiceCallAsync (LoginMethod, new Dictionary<string, object> {
+			loginForCurrentUser = login;
+			return DoServiceCallAsync (Login, new Dictionary<string, object> {
 				{"login", login},
 				{"password", password},
 			});
