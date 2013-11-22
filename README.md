@@ -31,12 +31,10 @@ Using It
 
 ```csharp
 using CodeRinseRepeat.Bugzilla;
+
 var client = new BugzillaClient ("http://bugzilla.yourcompany.com/jsonrpc.cgi");
-client.LoginAsync ("username", "password").ContinueWith (t => {
-    client.GetBugAsync (1234).ContinueWith (t => {
-        Console.WriteLine (t.Result);
-    });   
-});
+await client.LoginAsync ("username", "password");
+var bug = await client.GetBugAsync (1234);
 ```
 
 Future
