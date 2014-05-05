@@ -46,4 +46,4 @@ Future
 License
 =======
 
-MIT/X11.
+MIT.
