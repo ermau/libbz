@@ -114,7 +114,19 @@ namespace CodeRinseRepeat.Bugzilla
 				var result = (JsonObject)t.Result["result"];
 				return ((JsonArray)result["bugs"]).Select (bo => Bug.FromJsonObject ((JsonObject)bo));
 			});
-		}														
+		}		
+		public Task<IEnumerable<Bug>> GetBugSearchResultsAsync (BugSearchOptions options)
+		{
+			if (string.IsNullOrWhiteSpace (loginForCurrentUser))
+				Console.WriteLine ("WARNING: Search result attempted without login. You will not see private search results.");
+		
+			return DoServiceCallAsync (BugSearch, options.ToDictionary()
+			).ContinueWith (t => {
+				var result = (JsonObject)t.Result["result"];
+				return ((JsonArray)result["bugs"]).Select (bo => Bug.FromJsonObject ((JsonObject)bo));
+			});
+		}		
+
 		public void Dispose ()
 		{
 			Dispose (true);
