@@ -76,7 +76,7 @@ namespace CodeRinseRepeat.Bugzilla
 			jsonObject = jsonObject.WrapInMissingKeySafeDictionary ();
 			var bug = new Bug ();
 
-			try{
+			try {
 				bug.AssignedTo = (string) jsonObject["assigned_to"];
 				bug.BlocksOn = ((JsonArray) jsonObject["blocks"]).Cast<long> ().ToArray ();
 				bug.Classification = (string) jsonObject["classification"];
@@ -99,11 +99,12 @@ namespace CodeRinseRepeat.Bugzilla
 				bug.Summary = (string) jsonObject["summary"];
 				bug.Version = (string) jsonObject["version"];
 				bug.Attributes = jsonObject.AsReadOnly ();
-			}
-			catch(InvalidCastException e) {
-				if(jsonObject["id"] != null)
-					Console.WriteLine (jsonObject["id"].ToString() + " failed to parse correctly. " + e.Message);
-			}
+			} catch (Exception e) {
+				#if DEBUG
+				Console.Error.WriteLine(jsonObject.ToString());
+				#endif
+				Console.WriteLine("Failed to parse bug from JSON: {0}", e.Message);
+		}
 			return bug;
 		}
 	}
