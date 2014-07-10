@@ -50,6 +50,7 @@
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="SafeDictionary.cs" />
     <Compile Include="ObjectExtensions.cs" />
+    <Compile Include="BugSearchOptions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

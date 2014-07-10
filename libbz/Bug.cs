@@ -43,7 +43,7 @@ namespace CodeRinseRepeat.Bugzilla
 		public string[] Subscribers { get; private set; }
 		public string AssignedTo { get; private set; }
 		public string[] Groups { get; private set; }
-		public long[] SeeAlso { get; private set; }
+		public string[] SeeAlso { get; private set; }
 		public long[] DependsOn { get; private set; }
 		public long Id { get; private set; }
 		public string Resolution { get; private set; }
@@ -75,28 +75,36 @@ namespace CodeRinseRepeat.Bugzilla
 		{
 			jsonObject = jsonObject.WrapInMissingKeySafeDictionary ();
 			var bug = new Bug ();
-			bug.AssignedTo = (string) jsonObject["assigned_to"];
-			bug.BlocksOn = ((JsonArray) jsonObject["blocks"]).Cast<long> ().ToArray ();
-			bug.Classification = (string) jsonObject["classification"];
-			bug.Component = (string) jsonObject["component"];
-			bug.Creator = (string) jsonObject["creator"];
-			bug.DependsOn = ((JsonArray) jsonObject["depends_on"]).Cast<long> ().ToArray ();
-			bug.DuplicateOf = (long?) jsonObject["duplicate_of"];
-			bug.Groups = ((JsonArray) jsonObject["groups"]).Cast<string> ().ToArray ();
-			bug.Id = (long) jsonObject["id"];
-			bug.Keywords = ((JsonArray) jsonObject["keywords"]).Cast<string> ().ToArray ();
-			bug.LastChanged = DateTime.SpecifyKind (DateTime.Parse ((string) jsonObject["last_change_time"]), DateTimeKind.Utc);
-			bug.Milestone = (string) jsonObject["target_milestone"];
-			bug.Priority = (string) jsonObject["priority"];
-			bug.Product = (string) jsonObject["product"];
-			bug.Resolution = (string) jsonObject["resolution"];
-			bug.SeeAlso = ((JsonArray) jsonObject["see_also"]).Cast<long> ().ToArray ();
-			bug.Severity = (string) jsonObject["severity"];
-			bug.Status = (string) jsonObject["status"];
-			bug.Subscribers = ((JsonArray) jsonObject["cc"]).Cast<string> ().ToArray ();
-			bug.Summary = (string) jsonObject["summary"];
-			bug.Version = (string) jsonObject["version"];
-			bug.Attributes = jsonObject.AsReadOnly ();
+
+			try {
+				bug.AssignedTo = (string) jsonObject["assigned_to"];
+				bug.BlocksOn = ((JsonArray) jsonObject["blocks"]).Cast<long> ().ToArray ();
+				bug.Classification = (string) jsonObject["classification"];
+				bug.Component = (string) jsonObject["component"];
+				bug.Creator = (string) jsonObject["creator"];
+				bug.DependsOn = ((JsonArray) jsonObject["depends_on"]).Cast<long> ().ToArray ();
+				bug.DuplicateOf = (long?) jsonObject["duplicate_of"];
+				bug.Groups = ((JsonArray) jsonObject["groups"]).Cast<string> ().ToArray ();
+				bug.Id = (long) jsonObject["id"];
+				bug.Keywords = ((JsonArray) jsonObject["keywords"]).Cast<string> ().ToArray ();
+				bug.LastChanged = DateTime.SpecifyKind (DateTime.Parse ((string) jsonObject["last_change_time"]), DateTimeKind.Utc);
+				bug.Milestone = (string) jsonObject["target_milestone"];
+				bug.Priority = (string) jsonObject["priority"];
+				bug.Product = (string) jsonObject["product"];
+				bug.Resolution = (string) jsonObject["resolution"];
+				bug.SeeAlso = ((JsonArray) jsonObject["see_also"]).Cast<string> ().ToArray ();
+				bug.Severity = (string) jsonObject["severity"];
+				bug.Status = (string) jsonObject["status"];
+				bug.Subscribers = ((JsonArray) jsonObject["cc"]).Cast<string> ().ToArray ();
+				bug.Summary = (string) jsonObject["summary"];
+				bug.Version = (string) jsonObject["version"];
+				bug.Attributes = jsonObject.AsReadOnly ();
+			} catch (Exception e) {
+				#if DEBUG
+				Console.Error.WriteLine(jsonObject.ToString());
+				#endif
+				Console.WriteLine("Failed to parse bug from JSON: {0}", e.Message);
+		}
 			return bug;
 		}
 	}
