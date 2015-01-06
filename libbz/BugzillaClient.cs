@@ -69,7 +69,7 @@ namespace CodeRinseRepeat.Bugzilla
 			}).ContinueWith (t => {
 				var result = (JsonObject) t.Result["result"];
 				return Bug.FromJsonObject (((JsonObject) ((JsonArray) result["bugs"])[0]));
-			});
+			}, TaskScheduler.Default);
 		}
 
 		public Task<long> AddCommentAsync (Bug bug, string comment, bool isPrivate = false, double workTime = 0.0)
@@ -82,7 +82,7 @@ namespace CodeRinseRepeat.Bugzilla
 			}).ContinueWith (t => {
 				var result = (JsonObject) t.Result["result"];
 				return (long) result["id"];
-			});
+			}, TaskScheduler.Default);
 		}
 
 		public Task<bool> UpdateBugAsync (Bug bug, object fields) {
@@ -90,7 +90,7 @@ namespace CodeRinseRepeat.Bugzilla
 				{"ids", new [] { bug.Id }}
 			}.Concat (fields.ToDictionary ()).ToDictionary (t => t.Key, t => t.Value)).ContinueWith (t => {
 				return true;
-			});
+			}, TaskScheduler.Default);
 		}
 
 		public Task<IEnumerable<Bug>> GetBugsAsync (params long[] bugIds)
@@ -100,7 +100,7 @@ namespace CodeRinseRepeat.Bugzilla
 			}).ContinueWith (t => {
 				var result = (JsonObject) t.Result["result"];
 				return ((JsonArray) result["bugs"]).Select (bo => Bug.FromJsonObject ((JsonObject) bo));
-			});
+			}, TaskScheduler.Default);
 		}
 
 		public Task<IEnumerable<Bug>> GetBugsAssignedToMeAsync ()
@@ -113,7 +113,7 @@ namespace CodeRinseRepeat.Bugzilla
 			}).ContinueWith (t => {
 				var result = (JsonObject)t.Result["result"];
 				return ((JsonArray)result["bugs"]).Select (bo => Bug.FromJsonObject ((JsonObject)bo));
-			});
+			}, TaskScheduler.Default);
 		}
 
 		public Task<IEnumerable<Bug>> GetBugSearchResultsAsync (BugSearchOptions options)
@@ -124,7 +124,7 @@ namespace CodeRinseRepeat.Bugzilla
 			return DoServiceCallAsync (BugSearch, options.ToDictionary()).ContinueWith (t => {
 				var result = (JsonObject)t.Result["result"];
 				return ((JsonArray)result["bugs"]).Select (bo => Bug.FromJsonObject ((JsonObject)bo));
-			});
+			}, TaskScheduler.Default);
 		}		
 
 		public void Dispose ()

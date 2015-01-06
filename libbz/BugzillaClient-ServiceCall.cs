@@ -103,7 +103,7 @@ namespace CodeRinseRepeat.Bugzilla
 		
 		Task<Dictionary<string, object>> DoServiceCallAsync (string method, params object[] parameters)
 		{
-			return Task.Factory.StartNew (() => DoServiceCall (method, parameters));
+			return Task.Factory.StartNew (() => DoServiceCall (method, parameters), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
 		}
 	}
 }
