@@ -55,6 +55,7 @@ namespace CodeRinseRepeat.Bugzilla
 		public string Component { get; private set; }
 		public string Product { get; private set; }
 		public string Milestone { get; private set; }
+		public string Url { get; private set; }
 		#endregion
 
 		public IDictionary<string, object> Attributes { get; private set; }
@@ -64,9 +65,9 @@ namespace CodeRinseRepeat.Bugzilla
 			return string.Format ("[Bug: Priority={0}, BlocksOn={1}, Creator={2}, DuplicateOf={3}, LastChanged={4}, " +
 				"Keywords={5}, Subscribers={6}, AssignedTo={7}, Groups={8}, SeeAlso={9}, DependsOn={10}, Id={11}, " +
 				"Resolution={12}, Classification={13}, Status={14}, Summary={15}, Severity={16}, Version={17}, " +
-				"Component={18}, Product={19}, Milestone={20}]", Priority, BlocksOn, Creator, DuplicateOf, LastChanged, 
-				Keywords, Subscribers, AssignedTo, Groups, SeeAlso, DependsOn, Id, Resolution, Classification, Status, 
-				Summary, Severity, Version, Component, Product, Milestone
+				"Component={18}, Product={19}, Milestone={20}, Url={21}]", Priority, BlocksOn, Creator, DuplicateOf, LastChanged,
+				Keywords, Subscribers, AssignedTo, Groups, SeeAlso, DependsOn, Id, Resolution, Classification, Status,
+				Summary, Severity, Version, Component, Product, Milestone, Url
 			);
 		}
 		
@@ -99,6 +100,7 @@ namespace CodeRinseRepeat.Bugzilla
 				bug.Summary = (string) jsonObject["summary"];
 				bug.Version = (string) jsonObject["version"];
 				bug.Attributes = jsonObject.AsReadOnly ();
+				bug.Url = (string) jsonObject["url"];
 			} catch (Exception e) {
 				#if DEBUG
 				Console.Error.WriteLine(jsonObject.ToString());
