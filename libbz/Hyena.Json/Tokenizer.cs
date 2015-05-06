@@ -89,12 +89,12 @@ namespace Hyena.Json
 		}
 
 		private void UnexpectedCharacter (char ch) {
-			throw new ApplicationException (String.Format ("Unexpected character '{0}' at [{1}:{2}]", 
+			throw new Exception (String.Format ("Unexpected character '{0}' at [{1}:{2}]",
 						ch, current_line, current_column - 1));
 		}
 
 		private void InvalidSyntax (string message) {
-			throw new ApplicationException (String.Format ("Invalid syntax: {0} at [{1}:{2}]", 
+			throw new Exception (String.Format ("Invalid syntax: {0} at [{1}:{2}]",
 						message, current_line, current_column));
 		}
 

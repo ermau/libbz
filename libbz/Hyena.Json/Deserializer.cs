@@ -154,12 +154,12 @@ namespace Hyena.Json
 		}
 
 		private void UnexpectedToken (TokenType expected, Token got) {
-			throw new ApplicationException (String.Format ("Unexpected token {0} at [{1}:{2}]; expected {3}", 
+			throw new Exception (String.Format ("Unexpected token {0} at [{1}:{2}]; expected {3}", 
 						got.Type, got.SourceLine, got.SourceColumn, expected));
 		}
 
 		private void UnexpectedEof (TokenType expected) {
-			throw new ApplicationException (String.Format ("Unexpected End of File; expected {0}", expected));
+			throw new Exception (String.Format ("Unexpected End of File; expected {0}", expected));
 		}
 	}
 }

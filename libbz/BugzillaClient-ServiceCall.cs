@@ -93,10 +93,10 @@ namespace CodeRinseRepeat.Bugzilla
 			#endif
 			
 			if ((long)response ["id"] != callId)
-				throw new ApplicationException (string.Format ("Response ID and original call ID don't match. Expected {0}, received {1}.", callId, response ["id"]));
+				throw new Exception (string.Format ("Response ID and original call ID don't match. Expected {0}, received {1}.", callId, response ["id"]));
 			
 			if (response ["error"] != null)
-				throw new ApplicationException (string.Format ("Received error message from Bugzilla. Message: {0}", ((JsonObject)response ["error"]) ["message"]));
+				throw new Exception (string.Format ("Received error message from Bugzilla. Message: {0}", ((JsonObject)response ["error"]) ["message"]));
 			
 			return response;
 		}
