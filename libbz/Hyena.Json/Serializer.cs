@@ -67,7 +67,7 @@ namespace Hyena.Json
 		}
 
 		public void Serialize (Stream stream) {
-			Serialize (stream, Encoding.Default);
+			Serialize (stream, Encoding.Unicode);
 		}
 
 		private string SerializeBool (bool val) {
