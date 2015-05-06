@@ -27,6 +27,7 @@
 using Hyena.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace CodeRinseRepeat.Bugzilla
@@ -100,10 +101,10 @@ namespace CodeRinseRepeat.Bugzilla
 				bug.Version = (string) jsonObject["version"];
 				bug.Attributes = jsonObject.AsReadOnly ();
 			} catch (Exception e) {
-				#if DEBUG
-				Console.Error.WriteLine(jsonObject.ToString());
+				#if TRACE
+				Debug.WriteLine(jsonObject.ToString());
 				#endif
-				Console.WriteLine("Failed to parse bug from JSON: {0}", e.Message);
+				Debug.WriteLine("Failed to parse bug from JSON: {0}", e.Message);
 		}
 			return bug;
 		}

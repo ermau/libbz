@@ -28,6 +28,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Hyena.Json;
 
 namespace CodeRinseRepeat.Bugzilla
@@ -119,7 +120,7 @@ namespace CodeRinseRepeat.Bugzilla
 		public Task<IEnumerable<Bug>> GetBugSearchResultsAsync (BugSearchOptions options)
 		{
 			if (string.IsNullOrWhiteSpace (loginForCurrentUser))
-				Console.WriteLine ("WARNING: Search result attempted without login. You will not see private search results.");
+				Debug.WriteLine ("WARNING: Search result attempted without login. You will not see private search results.");
 		
 			return DoServiceCallAsync (BugSearch, options.ToDictionary()).ContinueWith (t => {
 				var result = (JsonObject)t.Result["result"];

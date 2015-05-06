@@ -46,16 +46,16 @@ namespace CodeRinseRepeat.Bugzilla
 				{"params", parameters}
 			};
 			
-			#if DEBUG
-			Console.Error.Write ("Serializing JSON-RPC call object...");
+			#if TRACE
+			Debug.WriteLine ("Serializing JSON-RPC call object...");
 			Stopwatch s = new Stopwatch ();
 			s.Start ();
 			#endif
 			string jsonPayload = new Serializer (callObject).Serialize ();
-			#if DEBUG
+			#if TRACE
 			s.Stop ();
-			Console.Error.WriteLine ("done in {0}.", s.Elapsed);
-			Console.Error.WriteLine ("Serialized payload: {0}", jsonPayload);
+			Debug.WriteLine ("...done in {0}.", s.Elapsed);
+			Debug.WriteLine ("Serialized payload: {0}", jsonPayload);
 			#endif
 			
 			var serviceClient = new CookieClient ();
@@ -65,31 +65,31 @@ namespace CodeRinseRepeat.Bugzilla
 			
 			serviceClient.Headers.Add (HttpRequestHeader.ContentType, "application/json");
 			
-			#if DEBUG
-			Console.Error.Write ("Making request...");
+			#if TRACE
+			Debug.WriteLine ("Making request...");
 			s.Reset ();
 			s.Start ();
 			#endif
 			
 			string responseJson = serviceClient.UploadString (ServiceUri, jsonPayload);
 			
-			#if DEBUG
+			#if TRACE
 			s.Stop ();
-			Console.Error.WriteLine ("done in {0}.", s.Elapsed);
-			Console.Error.WriteLine ("Response: {0}", responseJson);
+			Debug.WriteLine ("...done in {0}.", s.Elapsed);
+			Debug.WriteLine ("Response: {0}", responseJson);
 			#endif
 			
 			cookies = serviceClient.Cookies;
 			
-			#if DEBUG
+			#if TRACE
 			s.Reset ();
-			Console.Error.Write ("Deserializing result...");
+			Debug.WriteLine ("Deserializing result...");
 			s.Start ();
 			#endif
 			var response = new Deserializer (responseJson).Deserialize () as Dictionary<string, object>;
-			#if DEBUG
+			#if TRACE
 			s.Stop ();
-			Console.Error.WriteLine ("done in {0}.", s.Elapsed);
+			Debug.WriteLine ("done in {0}.", s.Elapsed);
 			#endif
 			
 			if ((long)response ["id"] != callId)

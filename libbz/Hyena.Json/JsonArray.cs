@@ -28,6 +28,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Hyena.Json
@@ -39,7 +40,7 @@ namespace Hyena.Json
 		}
 
 		public void Dump (int level) {
-			Console.Write (ToString ());
+			Debug.WriteLine (ToString ());
 		}
 
 		public override string ToString () {
