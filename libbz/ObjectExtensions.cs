@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace CodeRinseRepeat.Bugzilla
 {
@@ -34,7 +35,7 @@ namespace CodeRinseRepeat.Bugzilla
 		public static IDictionary<string, object> ToDictionary (this object self)
 		{
 			var type = self.GetType ();
-			var props = type.GetProperties ();
+			var props = type.GetTypeInfo().DeclaredProperties;
 			return props.ToDictionary (pi => pi.Name, pi => pi.GetValue (self, null));
 		}
 	}
