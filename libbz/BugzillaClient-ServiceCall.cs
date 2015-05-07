@@ -1,10 +1,12 @@
 //
 // BugzillaClient-ServiceCall.cs
 //
-// Author:
+// Authors:
 //       Bojan Rajkovic <brajkovic@coderinserepeat.com>
+//       Eric Maupin <me@ermau.com>
 //
 // Copyright (c) 2011-2013 Bojan Rajkovic
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +25,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeRinseRepeat.Bugzilla;
@@ -36,7 +42,7 @@ namespace CodeRinseRepeat.Bugzilla
 {
 	public partial class BugzillaClient
 	{
-		Dictionary<string, object> DoServiceCall (string method, params object[] parameters)
+		async Task<Dictionary<string, object>> DoServiceCallAsync (string method, params object[] parameters)
 		{
 			var callId = Interlocked.Increment (ref this.callId);
 
@@ -51,27 +57,31 @@ namespace CodeRinseRepeat.Bugzilla
 			Stopwatch s = new Stopwatch ();
 			s.Start ();
 			#endif
-			string jsonPayload = new Serializer (callObject).Serialize ();
+			string jsonPayload = await Task.Run (() => new Serializer (callObject).Serialize()).ConfigureAwait (false);
 			#if TRACE
 			s.Stop ();
 			Debug.WriteLine ("...done in {0}.", s.Elapsed);
 			Debug.WriteLine ("Serialized payload: {0}", jsonPayload);
 			#endif
-			
-			var serviceClient = new CookieClient ();
-			
-			if (cookies != null)
-				serviceClient.Cookies = cookies;
-			
-			serviceClient.Headers.Add (HttpRequestHeader.ContentType, "application/json");
-			
+
+			if (cookies == null)
+				cookies = new CookieContainer();
+
+			HttpClient serviceClient = new HttpClient (new HttpClientHandler {
+				CookieContainer = cookies,
+			});
+
 			#if TRACE
 			Debug.WriteLine ("Making request...");
 			s.Reset ();
 			s.Start ();
 			#endif
-			
-			string responseJson = serviceClient.UploadString (ServiceUri, jsonPayload);
+
+			var r = await serviceClient.SendAsync (new HttpRequestMessage (HttpMethod.Post, ServiceUri) {
+				Content = new StringContent (jsonPayload, Encoding.UTF8, "application/json")
+			}).ConfigureAwait (false);
+
+			var responseJson = await r.Content.ReadAsStringAsync().ConfigureAwait (false);
 			
 			#if TRACE
 			s.Stop ();
@@ -79,14 +89,12 @@ namespace CodeRinseRepeat.Bugzilla
 			Debug.WriteLine ("Response: {0}", responseJson);
 			#endif
 			
-			cookies = serviceClient.Cookies;
-			
 			#if TRACE
 			s.Reset ();
 			Debug.WriteLine ("Deserializing result...");
 			s.Start ();
 			#endif
-			var response = new Deserializer (responseJson).Deserialize () as Dictionary<string, object>;
+			var response = await Task.Run (() => new Deserializer (responseJson).Deserialize () as Dictionary<string, object>).ConfigureAwait (false);
 			#if TRACE
 			s.Stop ();
 			Debug.WriteLine ("done in {0}.", s.Elapsed);
@@ -99,11 +107,6 @@ namespace CodeRinseRepeat.Bugzilla
 				throw new Exception (string.Format ("Received error message from Bugzilla. Message: {0}", ((JsonObject)response ["error"]) ["message"]));
 			
 			return response;
-		}
-		
-		Task<Dictionary<string, object>> DoServiceCallAsync (string method, params object[] parameters)
-		{
-			return Task.Factory.StartNew (() => DoServiceCall (method, parameters), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
 		}
 	}
 }
